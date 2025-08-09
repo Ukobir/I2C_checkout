@@ -24,8 +24,7 @@
 
 void cw2017_init(i2c_inst_t *i2c);
 float cw2017_read_vcell(i2c_inst_t *i2c);
-// Função para ler a temperatura
 float cw2017_read_temp(i2c_inst_t *i2c);
-
+float cw2017_read_soc(i2c_inst_t *i2c);
 
 #endif
