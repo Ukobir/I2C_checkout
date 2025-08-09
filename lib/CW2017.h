@@ -4,8 +4,7 @@
 #include "hardware/i2c.h"
 
 // Defina os endereços e registros conforme o código original
-#define ADDR_R _u(0xC7)
-#define ADDR_W _u(0xC6)
+#define CW2017_ADDR  _u(0x63)
 
 #define REG_VERSION _u(0x00)
 #define REG_VCELL_H _u(0x02)
