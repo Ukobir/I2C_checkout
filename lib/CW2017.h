@@ -2,6 +2,7 @@
 #define BMP280_H
 
 #include "hardware/i2c.h"
+#include <stdio.h>
 
 // Defina os endereços e registros conforme o código original
 #define CW2017_ADDR  _u(0x63)
@@ -22,9 +23,14 @@
 #define REG_HOST_H _u(0xA0)
 #define REG_HOST_L _u(0xA1)
 
+#define AT24CS02_ADDR _u(0x50)
+
+
+
 void cw2017_init(i2c_inst_t *i2c);
 float cw2017_read_vcell(i2c_inst_t *i2c);
 float cw2017_read_temp(i2c_inst_t *i2c);
 float cw2017_read_soc(i2c_inst_t *i2c);
+void print_hexdump(i2c_inst_t *i2c);
 
 #endif
