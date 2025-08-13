@@ -67,38 +67,68 @@ float cw2017_read_soc(i2c_inst_t *i2c)
     return soc_percent;
 }
 
-// Tamanho da memória da AT24CS02 em bytes (2 kbit = 2048 bits = 256 bytes)
-const uint16_t EEPROM_SIZE_BYTES = 256;
-
 // Função para imprimir os dados em formato de hexdump
-void print_hexdump(i2c_inst_t *i2c)
+void print_hexdump(i2c_inst_t *i2c, uint8_t data_read[512])
 {
+    // Tamanho total da memória em bytes (4 kbit = 512 bytes)
+    const uint16_t EEPROM_SIZE_BYTES = 512;
+    const uint16_t PAGE_SIZE_BYTES = 256;
 
-    uint8_t data_read[EEPROM_SIZE_BYTES];
     // Para ler a partir do início, escrevemos o endereço 0x00 para o dispositivo.
     uint8_t start_mem_addr = 0x00;
-    int write_result = i2c_write_blocking(i2c0, AT24CS02_ADDR, &start_mem_addr, 1, true);
+    int write_result = i2c_write_blocking(i2c0, FM24C04D_ADDR_0, &start_mem_addr, 1, true);
     if (write_result == PICO_ERROR_GENERIC)
     {
         printf("Erro: Não foi possível comunicar com a EEPROM. Verifique as conexões e o endereço I2C.\n");
     }
 
     printf("Ponteiro de memória da EEPROM definido para 0x00. Lendo dados...\n");
-    int read_result = i2c_read_blocking(i2c0, AT24CS02_ADDR, data_read, EEPROM_SIZE_BYTES, false);
+    int read_result = i2c_read_blocking(i2c0, FM24C04D_ADDR_0, data_read, PAGE_SIZE_BYTES, false);
 
-    if (read_result != EEPROM_SIZE_BYTES)
+    if (read_result != PAGE_SIZE_BYTES)
     {
         printf("Erro: Falha ao ler os dados da EEPROM. Foram lidos %d de %d bytes.\n", read_result, EEPROM_SIZE_BYTES);
     }
-    printf("---- Leitura da EEPROM (256 bytes) ----\n");
+    printf("---- Leitura da EEPROM Pagina 1 ----\n");
     printf("Addr:  00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F\n");
     printf("------------------------------------------------------\n");
-    for (int i = 0; i < EEPROM_SIZE_BYTES; i += 16)
+    for (int i = 0; i < PAGE_SIZE_BYTES; i += 16)
     {
         printf("%04X: ", i);
         for (int j = 0; j < 16; j++)
         {
-            if (i + j < EEPROM_SIZE_BYTES)
+            if (i + j < PAGE_SIZE_BYTES)
+            {
+                printf("%02X ", data_read[i + j]);
+            }
+            else
+            {
+                printf("   ");
+            }
+        }
+        printf("\n");
+    }
+    printf("-------------------- Fim ---------------------\n");
+
+    write_result = i2c_write_blocking(i2c0, FM24C04D_ADDR_1, &start_mem_addr, 1, true);
+    if (write_result == PICO_ERROR_GENERIC)
+    {
+        printf("Erro: Não foi possível comunicar com a EEPROM. Verifique as conexões e o endereço I2C.\n");
+    }
+    read_result = i2c_read_blocking(i2c0, FM24C04D_ADDR_1, data_read + PAGE_SIZE_BYTES, PAGE_SIZE_BYTES, false);
+    if (read_result != PAGE_SIZE_BYTES)
+    {
+        printf("Erro: Falha ao ler os dados da EEPROM. Foram lidos %d de %d bytes.\n", read_result, PAGE_SIZE_BYTES);
+    }
+    printf("---- Leitura da EEPROM pagina 2 ----\n");
+    printf("Addr:  00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F\n");
+    printf("------------------------------------------------------\n");
+    for (int i = 0; i < PAGE_SIZE_BYTES; i += 16)
+    {
+        printf("%04X: ", i);
+        for (int j = 0; j < 16; j++)
+        {
+            if (i + j < PAGE_SIZE_BYTES)
             {
                 printf("%02X ", data_read[i + j]);
             }

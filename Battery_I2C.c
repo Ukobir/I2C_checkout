@@ -9,6 +9,10 @@
 #define I2C0_SDA_PIN 0 // GPIO0 para I2C0 SDA
 #define I2C0_SCL_PIN 1 // GPIO1 para I2C0 SCL
 
+// Tamanho total da memória em bytes (4 kbit = 512 bytes = 2 paginas de 256)
+const uint16_t EEPROM_SIZE_BYTES = 512;
+
+
 // Velocidade do I2C (100 kHz)
 #define I2C_BAUDRATE 100000
 
@@ -80,15 +84,15 @@ int main()
     gpio_pull_up(I2C0_SDA_PIN);
     gpio_pull_up(I2C0_SCL_PIN);
 
-    print_hexdump(i2c0);
-    
-    while (true)
-    {
-        // // Escaneia ambos os barramentos I2C
-        // scan_i2c_bus(i2c0, "I2C0");
+    // Imprime todo o conteúdo de 512 bytes
+    uint8_t data_read[EEPROM_SIZE_BYTES]; 
+    print_hexdump(i2c0, data_read); // Agora é so utilizar o vetor data_read e modificar os valores mapeados
+    printf("\n\n Teste: %02X %02X", data_read[0], data_read[1]);
+    //Exemplo
+     uint16_t cycle_count = (data_read[0xE3] << 8) | data_read[0xE2]; 
 
-        printf("\nEscaneamento concluído. Aguardando 5 segundos antes do próximo escaneamento...\n");
-        sleep_ms(5000);
+    while (1) {
+        tight_loop_contents();
     }
 
     return 0;

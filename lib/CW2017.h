@@ -23,7 +23,8 @@
 #define REG_HOST_H _u(0xA0)
 #define REG_HOST_L _u(0xA1)
 
-#define AT24CS02_ADDR _u(0x50)
+#define FM24C04D_ADDR_0 _u(0x50)
+#define FM24C04D_ADDR_1 _u(0x51)
 
 
 
@@ -31,6 +32,6 @@ void cw2017_init(i2c_inst_t *i2c);
 float cw2017_read_vcell(i2c_inst_t *i2c);
 float cw2017_read_temp(i2c_inst_t *i2c);
 float cw2017_read_soc(i2c_inst_t *i2c);
-void print_hexdump(i2c_inst_t *i2c);
+void print_hexdump(i2c_inst_t *i2c, uint8_t data_read[256]);
 
 #endif
